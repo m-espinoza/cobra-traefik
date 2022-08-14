@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+
+  traefik:
+    image: traefik:${TRAEFIK_VERSION}
+    environment:
+      - TZ=${TZ}
+    ports:
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+
+    networks:
+      - traefik
+
+    volumes:
+      - ${TRAEFIK_DOCKER_ROUTE}:${TRAEFIK_DOCKER_ROUTE}
+      - ${TRAEFIK_YML_FILE_ROUTE}:/traefik.yml
+      - ${TRAEFIK_ACME_FILE_ROUTE}:/letsencrypt
+      - ${TRAEFIK_LOG_FILE_ROUTE}:/traefik.log
+    
+    labels:
+      - traefik.http.routers.api.rule=Host(`monitor.${DOMAIN}`)
+      - traefik.http.routers.api.service=api@internal
+      - traefik.http.routers.api.middlewares=auth
+      - traefik.http.middlewares.auth.basicauth.users=${TRAEFIK_LOGIN}
+      - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.api.tls.certresolver=myresolver
+
+    container_name: traefik
+    restart: always
+
+networks:
+  traefik:
+    external:
+      name: ${TRAEFIK_DOCKER_NETWORK}

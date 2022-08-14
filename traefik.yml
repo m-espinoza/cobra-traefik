@@ -1,0 +1,33 @@
+api:
+  insecure: false
+
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+  
+  websecure:
+    address: ":443"
+
+providers:
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    network: cobra
+
+log:
+  level: ERROR 
+  filePath: "/traefik.log"
+  format: json
+
+certificatesResolvers:
+  myresolver:
+    acme:
+      email: espinoza.manuel1989@gmail.com
+      storage: /letsencrypt/acme.json
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
