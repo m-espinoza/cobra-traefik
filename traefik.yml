@@ -16,7 +16,7 @@ entryPoints:
 providers:
   docker:
     endpoint: "unix:///var/run/docker.sock"
-    network: cobra
+    network: traefik
 
 log:
   level: ERROR 
@@ -26,7 +26,7 @@ log:
 certificatesResolvers:
   myresolver:
     acme:
-      email: espinoza.manuel1989@gmail.com
+      email: ${ACME_EMAIL}
       storage: /letsencrypt/acme.json
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       httpChallenge:
